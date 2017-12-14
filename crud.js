@@ -6,6 +6,8 @@ var ObjectID = require('mongodb').ObjectID;
 
 const db = mongoskin.db(process.env.MONGOURL);
 
+console.log('status->', db.collection('test').find({}).toArray((e,r) => console.log('e-> ', e, ' r->', r)))
+
 console.log('connecting to mongodb: ', process.env.MONGOURL)
 
 const route = function() {
