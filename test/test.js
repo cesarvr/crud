@@ -1,7 +1,7 @@
 var superagent = require('superagent')
 var expect = require('chai').expect
-const config = require('../../config/environment');
 
+const URL = 'http://localhost:8080'
 describe('express rest api server', function(){
   var id
 
@@ -9,7 +9,7 @@ describe('express rest api server', function(){
     let test = { name: 'John'
         , email: 'john@rpjs.co'
       }
-    superagent.post('http://localhost:8000/api/collections/test')
+    superagent.post(URL + '/api/collections/test')
       .send()
       .end(function(e,res){
         expect(e).to.eql(null)
@@ -24,7 +24,7 @@ describe('express rest api server', function(){
   })
 
   it('retrieves an object', function(done){
-    superagent.get('http://localhost:8000/api/collections/test/'+id)
+    superagent.get(URL + '/api/collections/test/'+id)
       .end(function(e, res){
         // console.log(res.body)
         expect(e).to.eql(null)
@@ -36,7 +36,7 @@ describe('express rest api server', function(){
   })
 
   it('retrieves a collection', function(done){
-    superagent.get('http://localhost:8000/api/collections/test')
+    superagent.get(URL + '/api/collections/test')
       .end(function(e, res){
         // console.log(res.body)
         expect(e).to.eql(null)
@@ -47,7 +47,7 @@ describe('express rest api server', function(){
   })
 
   it('updates an object', function(done){
-    superagent.put('http://localhost:8000/api/collections/test/'+id)
+    superagent.put(URL + '/api/collections/test/'+id)
       .send({name: 'Peter'
         , email: 'peter@yahoo.com'})
       .end(function(e, res){
@@ -58,7 +58,7 @@ describe('express rest api server', function(){
   })
 
   it('checks an updated object', function(done){
-    superagent.get('http://localhost:8000/api/collections/test/'+id)
+    superagent.get(URL + '/api/collections/test/'+id)
       .end(function(e, res){
         expect(e).to.eql(null)
         expect(typeof res.body).to.eql('object')
@@ -70,9 +70,9 @@ describe('express rest api server', function(){
   })    
 
   it('removes an object', function(done){
-    superagent.del('http://localhost:8000/api/collections/test/'+id)
+    superagent.del(URL + '/collections/test/'+id)
       .end(function(e, res){
-        expect(res.body).to.deep.equal({ ok: 1, n: 1 })
+        expect(res.text).to.deep.equal('OK')
         done()
       })
   })      

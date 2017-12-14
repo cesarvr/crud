@@ -8,6 +8,8 @@ const db = mongoskin.db(process.env.MONGOURL, {
     safe: true
 });
 
+console.log('connecting to mongodb: ', process.env.MONGOURL)
+
 const route = function() {
     var app = new express.Router();
 
