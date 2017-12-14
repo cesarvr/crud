@@ -4,9 +4,7 @@ const express = require('express')
 
 var ObjectID = require('mongodb').ObjectID;
 
-const db = mongoskin.db(process.env.MONGOURL, {
-    safe: true
-});
+const db = mongoskin.db(process.env.MONGOURL);
 
 console.log('connecting to mongodb: ', process.env.MONGOURL)
 

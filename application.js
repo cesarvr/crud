@@ -5,7 +5,7 @@ const app = express()
 
 app.use('/api', api())
 
-app.use('/', (req, res, next)=> {
+app.get('/', (req, res, next)=> {
   res.sendStatus(200).send('Service is active')
 })
 
