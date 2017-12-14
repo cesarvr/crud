@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node -e \"console.log('hello')\""
+    "test": "node -e \"console.log('hello')\"",
+    "start": "node application.js"
   },
   "author": "",
   "license": "ISC",
