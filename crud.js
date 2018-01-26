@@ -1,38 +1,57 @@
 const mongoskin = require('mongoskin')
 const bodyParser = require('body-parser')
 const express = require('express')
+const _ = require('underscore')
 
-var ObjectID = require('mongodb').ObjectID;
+let MongoURI = process.env.MONGOURL
 
-const db = mongoskin.db(process.env.MONGOURL);
+function initialize() {
 
-console.log('status->', db.collection('test').find({}).toArray((e,r) => console.log('e-> ', e, ' r->', r)))
+    var router = new express.Router();
 
-console.log('connecting to mongodb: ', process.env.MONGOURL)
+    console.log('connecting to mongodb: ', MongoURI)
 
-const route = function() {
-    var app = new express.Router();
+    if (_.isEmpty(MongoURI)) {
+        console.log('no connection to MongoDB, persistance capabilities are disable')
+        console.log('to enable persistance capabilities deploy this container with the enviorment variable MONGOURL')
+        console.log('============================================================ \n\n')
+        console.log('example: mongodb://User:Password@ServiceName:27317/Database')
+
+        router.get('/', function(req, res) {
+            res.send('Persistance is not available. Please check the logs for more information.')
+        })
+
+        return router
+    }
+
+    const db = mongoskin.db(process.env.MONGOURL);
+
+    return route(router, db, require('mongodb').ObjectID)
+}
+
+
+const route = function(router, db, ObjectID) {
 
     // parse application/x-www-form-urlencoded
-    app.use(bodyParser.urlencoded({
+    router.use(bodyParser.urlencoded({
         extended: false
     }))
 
     // parse application/json
-    app.use(bodyParser.json())
+    router.use(bodyParser.json())
 
     let collection = {};
 
-    app.param('collectionName', function(req, res, next, collectionName) {
+    router.param('collectionName', function(req, res, next, collectionName) {
         collection = db.collection(collectionName)
         return next()
     })
 
-    app.get('/', function(req, res) {
+    router.get('/', function(req, res) {
         res.send('please select a collection, e.g., /collections/messages')
     })
 
-    app.get('/collections/:collectionName', function(req, res) {
+    router.get('/collections/:collectionName', function(req, res) {
         collection.find({}, {
             limit: 10,
             sort: [
@@ -44,14 +63,14 @@ const route = function() {
         })
     })
 
-    app.post('/collections/:collectionName', function(req, res) {
+    router.post('/collections/:collectionName', function(req, res) {
         collection.insert(req.body, {}, function(e, results) {
             if (e) return next(e)
             res.send(results)
         })
     })
 
-    app.get('/collections/:collectionName/:id', function(req, res) {
+    router.get('/collections/:collectionName/:id', function(req, res) {
         collection.findOne({
             _id: ObjectID(req.params.id)
         }, function(e, result) {
@@ -60,7 +79,7 @@ const route = function() {
         })
     })
 
-    app.put('/collections/:collectionName/:id', function(req, res) {
+    router.put('/collections/:collectionName/:id', function(req, res) {
         collection.update({
             _id: mongoskin.helper.toObjectID(req.params.id)
         }, {
@@ -71,7 +90,7 @@ const route = function() {
         })
     })
 
-    app.delete('/collections/:collectionName/:id', function(req, res) {
+    router.delete('/collections/:collectionName/:id', function(req, res) {
         collection.remove({
             _id: ObjectID(req.params.id)
         }, function(e, result) {
@@ -81,7 +100,7 @@ const route = function() {
     })
 
 
-    return app
+    return router
 }
 
-module.exports = route
+module.exports = initialize()

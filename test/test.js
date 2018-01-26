@@ -1,7 +1,6 @@
 var superagent = require('superagent')
 var expect = require('chai').expect
-//const URL = 'http://localhost:8080'
-const URL = 'http://crud-crud.127.0.0.1.nip.io'
+const URL = 'http://localhost:8080'
 describe('express rest api server', function(){
   var id
 
